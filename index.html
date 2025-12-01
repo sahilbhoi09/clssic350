@@ -2,21 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Classic 350 Style Speedometer</title>
+<title>Classic 350 Speedometer Replica</title>
 <style>
-    :root {
-        --body-color: #c2a67f;
-        --dial-outer: #e9e4db;
-        --dial-inner: #222;
-        --dial-mark: #333;
-        --needle: #e53935;
-        --neutral-off: #2a2a2a;
-        --neutral-on: #24c063;
-        --hi-off: #1e1e3a;
-        --hi-on: #2f6dff;
-        --cluster-bg: #151515;
-    }
-
     * {
         box-sizing: border-box;
         font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -28,7 +15,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: radial-gradient(circle at top, #555 0, #111 60%);
+        background: radial-gradient(circle at top, #444 0, #111 60%);
         color: #f5f5f5;
     }
 
@@ -40,243 +27,267 @@
     }
 
     .cluster {
-        background: var(--cluster-bg);
-        padding: 24px 28px;
-        border-radius: 28px;
-        box-shadow:
-            0 18px 35px rgba(0, 0, 0, 0.7),
-            0 0 0 4px rgba(0, 0, 0, 0.7);
         display: flex;
-        gap: 20px;
         align-items: center;
+        gap: 22px;
+        background: #151515;
+        padding: 24px 28px;
+        border-radius: 30px;
+        box-shadow:
+            0 18px 36px rgba(0, 0, 0, 0.8),
+            0 0 0 4px rgba(0, 0, 0, 0.7);
     }
 
-    .speedo-wrapper {
-        position: relative;
-        width: 260px;
-        height: 260px;
+    /* MAIN ROUND HOUSING (same beige body) */
+    .speedo-housing {
+        width: 270px;
+        height: 270px;
         border-radius: 50%;
-        background: radial-gradient(circle at 30% 20%, #e0cba4, #9a815c);
+        background: radial-gradient(circle at 30% 20%, #d0b890, #a8875c);
         box-shadow:
-            inset 0 5px 10px rgba(255, 255, 255, 0.3),
-            inset 0 -5px 15px rgba(0, 0, 0, 0.45);
+            inset 0 8px 15px rgba(255, 255, 255, 0.5),
+            inset 0 -10px 20px rgba(0, 0, 0, 0.6),
+            0 10px 26px rgba(0, 0, 0, 0.9);
+        position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: box-shadow 0.3s ease, background 0.3s ease;
+        transition: box-shadow 0.25s ease, background 0.25s ease;
     }
 
-    .speedo-wrapper.lights-on {
+    .speedo-housing.lights-on {
+        background: radial-gradient(circle at 30% 20%, #e9d3ab, #a8875c);
         box-shadow:
-            0 0 24px rgba(255, 255, 255, 0.3),
-            inset 0 8px 16px rgba(255, 255, 255, 0.6),
-            inset 0 -6px 20px rgba(0, 0, 0, 0.5);
-        background: radial-gradient(circle at 30% 20%, #f8e1b5, #9b7f57);
+            0 0 26px rgba(255, 255, 200, 0.8),
+            inset 0 10px 24px rgba(255, 255, 255, 0.9),
+            inset 0 -10px 22px rgba(0, 0, 0, 0.7);
     }
 
-    svg {
+    /* The real dial image from your Classic 350 */
+    .dial-face {
         width: 210px;
         height: 210px;
-        filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.8));
-    }
-
-    .indicator-cluster {
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-        align-items: center;
-    }
-
-    .sub-dial {
-        width: 95px;
-        height: 95px;
         border-radius: 50%;
-        background: radial-gradient(circle at 35% 20%, #f1e7d2, #c3b08f);
+        background-image: url("classic350_speedo.png"); /* <- put your image here */
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+        position: relative;
         box-shadow:
-            inset 0 4px 8px rgba(255, 255, 255, 0.6),
-            inset 0 -4px 10px rgba(0, 0, 0, 0.6),
-            0 6px 15px rgba(0, 0, 0, 0.7);
+            0 0 0 6px #dcd3c4,
+            0 0 0 9px #a39984,
+            0 6px 18px rgba(0, 0, 0, 0.9);
+        overflow: visible;
+    }
+
+    /* Needle – aligned to real center of the dial */
+    .needle {
+        position: absolute;
+        width: 6px;
+        height: 95px;
+        background: linear-gradient(to bottom, #111 0, #e53935 40%, #111 100%);
+        border-radius: 999px;
+        top: 50%;
+        left: 50%;
+        transform-origin: 50% 76%; /* bottom-ish so it pivots from center screw */
+        transform: translate(-50%, -76%) rotate(-130deg);
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
+    }
+
+    /* Center screw */
+    .needle-center-outer {
+        position: absolute;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 20%, #f1e5d3, #948874);
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow:
+            inset 0 3px 4px rgba(255, 255, 255, 0.8),
+            inset 0 -3px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    .needle-center-inner {
+        position: absolute;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background: #111;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.9);
+    }
+
+    /* Fake odometer – placed approximately where it is on real dial */
+    .odo-window {
+        position: absolute;
+        width: 90px;
+        height: 24px;
+        background: linear-gradient(to bottom, #111, #333);
+        border-radius: 4px;
+        top: 58%;
+        left: 50%;
+        transform: translateX(-50%);
+        box-shadow:
+            inset 0 2px 3px rgba(255, 255, 255, 0.7),
+            inset 0 -2px 4px rgba(0, 0, 0, 0.9);
         display: flex;
         align-items: center;
         justify-content: center;
+    }
+
+    .odo-text {
+        font-family: "Courier New", monospace;
+        font-size: 16px;
+        letter-spacing: 2px;
+        color: #f8f8f8;
+    }
+
+    /* SECOND SMALL ROUND DIAL (fuel / engine) */
+    .side-dial-wrapper {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 20%, #dfcba7, #9e815d);
+        box-shadow:
+            inset 0 5px 8px rgba(255, 255, 255, 0.6),
+            inset 0 -6px 10px rgba(0, 0, 0, 0.8),
+            0 7px 16px rgba(0, 0, 0, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .side-dial {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: radial-gradient(circle, #161616 0, #050505 70%);
+        border: 3px solid rgba(255, 255, 255, 0.6);
         position: relative;
         overflow: hidden;
-    }
-
-    .sub-dial-inner {
-        width: 78px;
-        height: 78px;
-        border-radius: 50%;
-        background: radial-gradient(circle, #141414 0, #0a0a0a 60%, #1b1b1b 100%);
-        border: 3px solid rgba(255, 255, 255, 0.4);
-        position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #fafafa;
+        color: #eee;
         font-size: 11px;
         text-transform: uppercase;
-        letter-spacing: 0.06em;
     }
 
-    .sub-dial-fuel-bar {
+    .side-dial-labels {
         position: absolute;
-        bottom: 10px;
-        left: 10px;
-        right: 10px;
-        height: 7px;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.12);
-        overflow: hidden;
-    }
-
-    .sub-dial-fuel-level {
-        width: 60%;
-        height: 100%;
-        background: linear-gradient(to right, #ff3d00, #ffeb3b, #00c853);
-    }
-
-    .sub-dial-labels {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        right: 10px;
+        top: 8px;
+        left: 8px;
+        right: 8px;
         display: flex;
         justify-content: space-between;
         font-size: 9px;
         opacity: 0.8;
     }
 
-    .sub-dial-icon {
+    .side-dial-bar {
         position: absolute;
-        top: 32%;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 16px;
-        opacity: 0.85;
-    }
-
-    .warning-lights {
-        display: flex;
-        gap: 12px;
-        justify-content: center;
-    }
-
-    .light-pill {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background: radial-gradient(circle at 30% 20%, #444, #111);
-        box-shadow:
-            inset 0 3px 5px rgba(255, 255, 255, 0.35),
-            inset 0 -3px 7px rgba(0, 0, 0, 0.9),
-            0 4px 10px rgba(0, 0, 0, 0.6);
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 14px;
-        font-weight: 600;
-        color: #eee;
-    }
-
-    .light-pill.neutral {
-        background: radial-gradient(circle at 30% 20%, #444, #000);
-    }
-
-    .light-pill.neutral.on {
-        background: radial-gradient(circle at 30% 20%, #afffd2, #018a3a);
-        box-shadow:
-            0 0 12px rgba(60, 255, 141, 0.9),
-            inset 0 2px 4px rgba(255, 255, 255, 0.7);
-        color: #032814;
-    }
-
-    .light-pill.high-beam {
-        background: radial-gradient(circle at 30% 20%, #27274b, #070721);
-    }
-
-    .light-pill.high-beam.on {
-        background: radial-gradient(circle at 30% 20%, #b6c7ff, #2352ff);
-        box-shadow:
-            0 0 12px rgba(94, 140, 255, 0.9),
-            inset 0 2px 5px rgba(255, 255, 255, 0.8);
-        color: #050b33;
-    }
-
-    .light-pill span.icon {
-        font-size: 11px;
-        opacity: 0.9;
-    }
-
-    .odometer-window {
-        position: absolute;
-        bottom: 62px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 92px;
-        height: 26px;
-        border-radius: 4px;
-        background: linear-gradient(to bottom, #111, #333);
-        box-shadow:
-            inset 0 2px 2px rgba(255, 255, 255, 0.3),
-            inset 0 -2px 3px rgba(0, 0, 0, 0.9);
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        height: 7px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.15);
         overflow: hidden;
     }
 
-    .odometer-text {
-        font-family: "Courier New", monospace;
-        font-size: 16px;
-        color: #f9f9f9;
-        letter-spacing: 2px;
+    .side-dial-fuel-level {
+        height: 100%;
+        width: 60%;
+        background: linear-gradient(to right, #ff3d00, #ffeb3b, #00c853);
     }
 
-    .odometer-label {
-        position: absolute;
-        bottom: 44px;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 9px;
-        letter-spacing: 0.15em;
+    .side-dial-icon {
+        font-size: 17px;
+        opacity: 0.85;
+    }
+
+    /* Indicator lights (right side cluster) */
+    .indicator-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .lights-row {
+        display: flex;
+        gap: 10px;
+    }
+
+    .light-round {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 20%, #444, #000);
+        box-shadow:
+            inset 0 3px 6px rgba(255, 255, 255, 0.4),
+            inset 0 -3px 7px rgba(0, 0, 0, 0.9),
+            0 4px 10px rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        color: #eee;
+        position: relative;
         text-transform: uppercase;
-        color: rgba(0, 0, 0, 0.6);
-    }
-
-    .brand-text {
-        position: absolute;
-        bottom: 30px;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 11px;
         font-weight: 600;
-        letter-spacing: 0.25em;
-        text-transform: uppercase;
-        color: #b31e1e;
     }
 
+    .light-round.neutral.on {
+        background: radial-gradient(circle at 30% 20%, #baffd4, #00963f);
+        box-shadow:
+            0 0 12px rgba(110, 255, 165, 0.9),
+            inset 0 3px 6px rgba(255, 255, 255, 0.9);
+        color: #042c14;
+    }
+
+    .light-round.highbeam.on {
+        background: radial-gradient(circle at 30% 20%, #c9d5ff, #2757ff);
+        box-shadow:
+            0 0 12px rgba(110, 150, 255, 0.9),
+            inset 0 3px 6px rgba(255, 255, 255, 0.9);
+        color: #051339;
+    }
+
+    .light-round.engine.on {
+        background: radial-gradient(circle at 30% 20%, #ffddc0, #ff5b2e);
+        box-shadow:
+            0 0 12px rgba(255, 140, 80, 0.9),
+            inset 0 3px 6px rgba(255, 255, 255, 0.9);
+        color: #3b1003;
+    }
+
+    /* Controls */
     .controls {
         display: flex;
         flex-wrap: wrap;
         gap: 12px;
         justify-content: center;
-        max-width: 420px;
+        max-width: 460px;
     }
 
     .controls button {
         border: none;
         padding: 9px 16px;
         border-radius: 999px;
-        background: linear-gradient(to bottom, #f5f5f5, #c3c3c3);
+        background: linear-gradient(to bottom, #f8f8f8, #c6c6c6);
         color: #111;
         font-weight: 600;
         font-size: 13px;
-        letter-spacing: 0.06em;
         text-transform: uppercase;
+        letter-spacing: 0.06em;
         box-shadow:
-            0 3px 8px rgba(0, 0, 0, 0.6),
+            0 3px 8px rgba(0, 0, 0, 0.7),
             inset 0 1px 2px rgba(255, 255, 255, 0.9);
         cursor: pointer;
         transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.2s ease;
@@ -285,9 +296,9 @@
     .controls button:active {
         transform: translateY(1px) scale(0.98);
         box-shadow:
-            0 1px 4px rgba(0, 0, 0, 0.7),
+            0 1px 4px rgba(0, 0, 0, 0.8),
             inset 0 1px 2px rgba(0, 0, 0, 0.8);
-        background: linear-gradient(to bottom, #d4d4d4, #9c9c9c);
+        background: linear-gradient(to bottom, #d5d5d5, #9f9f9f);
     }
 
     .slider-group {
@@ -298,11 +309,10 @@
         justify-content: center;
         margin-top: 8px;
         font-size: 13px;
-        opacity: 0.9;
     }
 
     .slider-group input[type="range"] {
-        width: 220px;
+        width: 230px;
         accent-color: #e53935;
     }
 
@@ -316,254 +326,166 @@
 <body>
 <div class="dashboard">
     <div class="cluster">
-        <!-- MAIN SPEEDO -->
-        <div class="speedo-wrapper" id="speedoWrapper">
-            <svg id="speedometer" viewBox="0 0 300 300">
-                <!-- Outer chrome ring -->
-                <circle cx="150" cy="150" r="140" fill="#dad2c4" />
-                <circle cx="150" cy="150" r="132" fill="#f3ece0" stroke="#b1a58e" stroke-width="3" />
-
-                <!-- Inner dark dial -->
-                <circle cx="150" cy="150" r="105" fill="#111" />
-
-                <!-- Tick marks and numbers container -->
-                <g id="ticks"></g>
-                <g id="numbers"></g>
-
-                <!-- Inner accent ring -->
-                <circle cx="150" cy="150" r="92" fill="none" stroke="#bdb7aa" stroke-width="3" />
-                <circle cx="150" cy="150" r="60" fill="#181818" stroke="#555" stroke-width="2" />
-
-                <!-- Needle group -->
-                <g id="needle">
-                    <circle cx="150" cy="150" r="12" fill="#cfc4b3" stroke="#222" stroke-width="2" />
-                    <circle cx="150" cy="150" r="6" fill="#111" />
-                    <polygon points="150,152 150,82 146,156" fill="#111" />
-                    <polygon points="150,152 150,82 154,156" fill="#e53935" />
-                </g>
-            </svg>
-
-            <!-- ODOMETER & TEXT -->
-            <div class="odometer-window">
-                <span class="odometer-text" id="odometerText">001537</span>
+        <!-- MAIN SPEEDO HOUSING -->
+        <div class="speedo-housing" id="speedoHousing">
+            <div class="dial-face" id="dialFace">
+                <div class="needle" id="needle"></div>
+                <div class="needle-center-outer">
+                    <div class="needle-center-inner"></div>
+                </div>
+                <div class="odo-window">
+                    <span class="odo-text" id="odoText">001537</span>
+                </div>
             </div>
-            <div class="odometer-label">ODO</div>
-            <div class="brand-text">CLASSIC</div>
         </div>
 
-        <!-- SIDE INDICATORS -->
-        <div class="indicator-cluster">
-            <div class="sub-dial">
-                <div class="sub-dial-inner">
-                    <div class="sub-dial-labels">
+        <!-- RIGHT SIDE: SMALL DIAL + LIGHTS -->
+        <div class="indicator-stack">
+            <div class="side-dial-wrapper">
+                <div class="side-dial">
+                    <div class="side-dial-labels">
                         <span>E</span>
                         <span>F</span>
                     </div>
-                    <div class="sub-dial-fuel-bar">
-                        <div class="sub-dial-fuel-level" id="fuelLevel"></div>
+                    <div class="side-dial-bar">
+                        <div class="side-dial-fuel-level" id="fuelLevel"></div>
                     </div>
-                    <div class="sub-dial-icon">⛽</div>
+                    <div class="side-dial-icon">⛽</div>
                 </div>
             </div>
 
-            <div class="warning-lights">
-                <div class="light-pill neutral on" id="neutralLight" title="Neutral">
-                    <span>N</span>
+            <div class="lights-row">
+                <div class="light-round neutral on" id="neutralLight" title="Neutral">
+                    N
                 </div>
-                <div class="light-pill high-beam" id="highBeamLight" title="High Beam">
-                    <span class="icon">⇧</span>
+                <div class="light-round highbeam" id="highBeamLight" title="High Beam">
+                    ⇧
+                </div>
+                <div class="light-round engine" id="engineLight" title="Engine">
+                    !
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- CONTROLS -->
     <div class="controls">
-        <button id="btnLights">Toggle Lights</button>
-        <button id="btnRace">Race!</button>
-        <button id="btnNeutral">Neutral On/Off</button>
+        <button id="btnLights">Backlight</button>
+        <button id="btnRace">Race</button>
+        <button id="btnNeutral">Neutral</button>
         <button id="btnHighBeam">High Beam</button>
+        <button id="btnEngine">Engine</button>
 
         <div class="slider-group">
             <span>Speed</span>
             <input type="range" id="speedSlider" min="0" max="160" value="0" />
-            <span id="speedReadout">0 km/h</span>
+            <span id="speedValue">0 km/h</span>
         </div>
     </div>
 </div>
 
 <script>
-    // ----- DIAL GEOMETRY -----
-    const cx = 150;
-    const cy = 150;
-    const minSpeed = 0;
-    const maxSpeed = 160;
-    const startAngle = -120;  // degrees
-    const endAngle = 120;     // degrees
+    // CONFIG TO MATCH REAL CLASSIC 350 DIAL
+    const MIN_SPEED = 0;
+    const MAX_SPEED = 160;
+    // In the real speedo, 0 is around -130°, 160 is around +130° approximately.
+    const START_ANGLE = -130;
+    const END_ANGLE = 130;
 
-    const ticksGroup = document.getElementById("ticks");
-    const numbersGroup = document.getElementById("numbers");
     const needle = document.getElementById("needle");
+    const odoText = document.getElementById("odoText");
+    const speedSlider = document.getElementById("speedSlider");
+    const speedValue = document.getElementById("speedValue");
+    const fuelLevel = document.getElementById("fuelLevel");
 
-    function degToRad(deg) {
-        return (deg * Math.PI) / 180;
+    const speedoHousing = document.getElementById("speedoHousing");
+    const neutralLight = document.getElementById("neutralLight");
+    const highBeamLight = document.getElementById("highBeamLight");
+    const engineLight = document.getElementById("engineLight");
+
+    let currentSpeed = 0;
+    let targetSpeed = 0;
+    let animFrame = null;
+
+    function lerp(a, b, t) {
+        return a + (b - a) * t;
     }
 
     function speedToAngle(speed) {
-        const t = (speed - minSpeed) / (maxSpeed - minSpeed);
-        return startAngle + t * (endAngle - startAngle);
+        const t = (speed - MIN_SPEED) / (MAX_SPEED - MIN_SPEED);
+        return START_ANGLE + t * (END_ANGLE - START_ANGLE);
     }
-
-    // Generate tick marks & numbers
-    function buildDial() {
-        const outerR = 105;
-        const innerMajorR = 87;
-        const innerMinorR = 95;
-
-        for (let s = minSpeed; s <= maxSpeed; s += 10) {
-            const angle = speedToAngle(s);
-            const rad = degToRad(angle);
-            const isMajor = s % 20 === 0;
-
-            const r1 = isMajor ? innerMajorR : innerMinorR;
-            const r2 = outerR;
-
-            const x1 = cx + r1 * Math.cos(rad);
-            const y1 = cy + r1 * Math.sin(rad);
-            const x2 = cx + r2 * Math.cos(rad);
-            const y2 = cy + r2 * Math.sin(rad);
-
-            const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-            line.setAttribute("x1", x1);
-            line.setAttribute("y1", y1);
-            line.setAttribute("x2", x2);
-            line.setAttribute("y2", y2);
-            line.setAttribute("stroke", "#eee");
-            line.setAttribute("stroke-width", isMajor ? 3 : 1.5);
-            line.setAttribute("stroke-linecap", "round");
-            ticksGroup.appendChild(line);
-
-            if (isMajor) {
-                const labelR = innerMajorR - 18;
-                const lx = cx + labelR * Math.cos(rad);
-                const ly = cy + labelR * Math.sin(rad) + 5;
-
-                const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-                text.setAttribute("x", lx);
-                text.setAttribute("y", ly);
-                text.setAttribute("text-anchor", "middle");
-                text.setAttribute("font-size", "13");
-                text.setAttribute("fill", "#f5f5f5");
-                text.setAttribute("font-family", "system-ui, -apple-system, sans-serif");
-                text.textContent = s.toString();
-                numbersGroup.appendChild(text);
-            }
-        }
-
-        // km/h label
-        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        label.setAttribute("x", cx);
-        label.setAttribute("y", cy + 35);
-        label.setAttribute("text-anchor", "middle");
-        label.setAttribute("font-size", "13");
-        label.setAttribute("fill", "#f5f5f5");
-        label.setAttribute("font-family", "system-ui, -apple-system, sans-serif");
-        label.textContent = "km/h";
-        numbersGroup.appendChild(label);
-    }
-
-    buildDial();
-
-    // ----- ANIMATION STATE -----
-    let currentSpeed = 0;
-    let targetSpeed = 0;
-    let speedAnimFrame = null;
-
-    const speedSlider = document.getElementById("speedSlider");
-    const speedReadout = document.getElementById("speedReadout");
-    const odometerText = document.getElementById("odometerText");
-    const speedoWrapper = document.getElementById("speedoWrapper");
-    const neutralLight = document.getElementById("neutralLight");
-    const highBeamLight = document.getElementById("highBeamLight");
-    const fuelLevel = document.getElementById("fuelLevel");
 
     function updateNeedle(speed) {
         const angle = speedToAngle(speed);
-        needle.setAttribute("transform", `rotate(${angle} ${cx} ${cy})`);
+        needle.style.transform =
+            `translate(-50%, -76%) rotate(${angle}deg)`;
 
-        speedReadout.textContent = `${speed.toFixed(0)} km/h`;
+        speedValue.textContent = `${speed.toFixed(0)} km/h`;
 
-        // Gentle fake odometer: increase with speed
+        // Fake odometer movement & fuel jiggle
         const baseOdo = 1537;
         const extra = Math.floor(Date.now() / 1000) % 999;
-        const odoValue = baseOdo + extra + Math.floor(speed);
-        odometerText.textContent = odoValue.toString().padStart(6, "0");
+        const odoVal = baseOdo + extra + Math.floor(speed);
+        odoText.textContent = odoVal.toString().padStart(6, "0");
 
-        // Slight fuel drop when revving hard (visual only)
-        const level = 40 + 40 * Math.cos(Date.now() / 3000);
-        fuelLevel.style.width = `${50 + level / 2}%`;
+        const fuelWobble = 10 * Math.sin(Date.now() / 2000);
+        fuelLevel.style.width = `${60 + fuelWobble}%`;
     }
 
-    function animateSpeed() {
+    function animate() {
         if (Math.abs(targetSpeed - currentSpeed) < 0.3) {
             currentSpeed = targetSpeed;
             updateNeedle(currentSpeed);
-            speedAnimFrame = null;
+            animFrame = null;
             return;
         }
-        currentSpeed += (targetSpeed - currentSpeed) * 0.12;
+        currentSpeed = lerp(currentSpeed, targetSpeed, 0.15);
         updateNeedle(currentSpeed);
-        speedAnimFrame = requestAnimationFrame(animateSpeed);
+        animFrame = requestAnimationFrame(animate);
     }
 
-    function setSpeed(speed) {
-        targetSpeed = Math.max(minSpeed, Math.min(maxSpeed, speed));
-        if (!speedAnimFrame) {
-            speedAnimFrame = requestAnimationFrame(animateSpeed);
+    function setSpeed(value) {
+        targetSpeed = Math.max(MIN_SPEED, Math.min(MAX_SPEED, value));
+        if (!animFrame) {
+            animFrame = requestAnimationFrame(animate);
         }
     }
 
-    // Slider control = manual throttle
+    // Slider = manual speed control
     speedSlider.addEventListener("input", (e) => {
-        const value = parseInt(e.target.value, 10);
-        setSpeed(value);
+        setSpeed(parseInt(e.target.value, 10));
     });
 
-    // ----- BUTTON ACTIONS -----
-    // Lights / backlight
-    const btnLights = document.getElementById("btnLights");
-    btnLights.addEventListener("click", () => {
-        speedoWrapper.classList.toggle("lights-on");
+    // Buttons
+    document.getElementById("btnLights").addEventListener("click", () => {
+        speedoHousing.classList.toggle("lights-on");
     });
 
-    // Neutral on/off
-    const btnNeutral = document.getElementById("btnNeutral");
-    btnNeutral.addEventListener("click", () => {
+    document.getElementById("btnNeutral").addEventListener("click", () => {
         neutralLight.classList.toggle("on");
     });
 
-    // High beam
-    const btnHighBeam = document.getElementById("btnHighBeam");
-    btnHighBeam.addEventListener("click", () => {
+    document.getElementById("btnHighBeam").addEventListener("click", () => {
         highBeamLight.classList.toggle("on");
     });
 
-    // Race / rev animation
-    const btnRace = document.getElementById("btnRace");
-    let racing = false;
+    document.getElementById("btnEngine").addEventListener("click", () => {
+        engineLight.classList.toggle("on");
+    });
 
-    btnRace.addEventListener("click", () => {
+    // Race animation: quick rev & drop
+    let racing = false;
+    document.getElementById("btnRace").addEventListener("click", () => {
         if (racing) return;
         racing = true;
 
-        // quick surge up then come back down
-        const peak = 80 + Math.random() * 70; // 80–150 km/h
-        const mid = 40 + Math.random() * 20;
+        const currentSlider = parseInt(speedSlider.value, 10);
+        const peak = 90 + Math.random() * 60; // 90–150
 
         setSpeed(peak);
-        setTimeout(() => setSpeed(mid), 900);
+        setTimeout(() => setSpeed(40 + Math.random() * 20), 900);
         setTimeout(() => {
-            setSpeed(parseInt(speedSlider.value, 10)); // back to slider position
+            setSpeed(currentSlider);
             racing = false;
         }, 1800);
     });
