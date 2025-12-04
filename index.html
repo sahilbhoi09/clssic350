@@ -1,497 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Classic 350 Speedometer Replica</title>
-<style>
+  <meta charset="UTF-8" />
+  <title>Fast App Swipe Prototype</title>
+  <style>
     * {
-        box-sizing: border-box;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-        margin: 0;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: radial-gradient(circle at top, #444 0, #111 60%);
-        color: #f5f5f5;
+      background: #000;
+      color: #fff;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
     }
 
-    .dashboard {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 18px;
+    .carousel {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      height: 220px;
+      overflow: hidden;
     }
 
-    .cluster {
-        display: flex;
-        align-items: center;
-        gap: 22px;
-        background: #151515;
-        padding: 24px 28px;
-        border-radius: 30px;
-        box-shadow:
-            0 18px 36px rgba(0, 0, 0, 0.8),
-            0 0 0 4px rgba(0, 0, 0, 0.7);
+    .track {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      display: flex;
+      gap: 60px;
+      transform: translate3d(0, -50%, 0);
+      will-change: transform;
     }
 
-    /* MAIN ROUND HOUSING (same beige body) */
-    .speedo-housing {
-        width: 270px;
-        height: 270px;
-        border-radius: 50%;
-        background: radial-gradient(circle at 30% 20%, #d0b890, #a8875c);
-        box-shadow:
-            inset 0 8px 15px rgba(255, 255, 255, 0.5),
-            inset 0 -10px 20px rgba(0, 0, 0, 0.6),
-            0 10px 26px rgba(0, 0, 0, 0.9);
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: box-shadow 0.25s ease, background 0.25s ease;
+    .app-item {
+      width: 110px;
+      text-align: center;
+      font-size: 13px;
+      color: #ddd;
+      pointer-events: none;
     }
 
-    .speedo-housing.lights-on {
-        background: radial-gradient(circle at 30% 20%, #e9d3ab, #a8875c);
-        box-shadow:
-            0 0 26px rgba(255, 255, 200, 0.8),
-            inset 0 10px 24px rgba(255, 255, 255, 0.9),
-            inset 0 -10px 22px rgba(0, 0, 0, 0.7);
+    .app-icon {
+      width: 110px;
+      height: 110px;
+      border-radius: 26px;
+      background: radial-gradient(circle at 20% 20%, #ffffff55, #5555ff 40%, #111);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+      transform-origin: center center;
+      transform: scale(1);
+      filter: brightness(0.8);
+      transition: transform 0.08s linear, filter 0.08s linear, opacity 0.08s linear;
+      will-change: transform, filter, opacity;
     }
 
-    /* The real dial image from your Classic 350 */
-    .dial-face {
-        width: 210px;
-        height: 210px;
-        border-radius: 50%;
-        background-image: url("classic350_speedo.png"); /* <- put your image here */
-        background-position: center;
-        background-size: cover;
-        background-repeat: no-repeat;
-        position: relative;
-        box-shadow:
-            0 0 0 6px #dcd3c4,
-            0 0 0 9px #a39984,
-            0 6px 18px rgba(0, 0, 0, 0.9);
-        overflow: visible;
+    .app-label {
+      margin-top: 10px;
+      opacity: 0.7;
     }
-
-    /* Needle – aligned to real center of the dial */
-    .needle {
-        position: absolute;
-        width: 6px;
-        height: 95px;
-        background: linear-gradient(to bottom, #111 0, #e53935 40%, #111 100%);
-        border-radius: 999px;
-        top: 50%;
-        left: 50%;
-        transform-origin: 50% 76%; /* bottom-ish so it pivots from center screw */
-        transform: translate(-50%, -76%) rotate(-130deg);
-        box-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
-    }
-
-    /* Center screw */
-    .needle-center-outer {
-        position: absolute;
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        background: radial-gradient(circle at 30% 20%, #f1e5d3, #948874);
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        box-shadow:
-            inset 0 3px 4px rgba(255, 255, 255, 0.8),
-            inset 0 -3px 4px rgba(0, 0, 0, 0.7);
-    }
-
-    .needle-center-inner {
-        position: absolute;
-        width: 15px;
-        height: 15px;
-        border-radius: 50%;
-        background: #111;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        box-shadow: 0 0 4px rgba(0, 0, 0, 0.9);
-    }
-
-    /* Fake odometer – placed approximately where it is on real dial */
-    .odo-window {
-        position: absolute;
-        width: 90px;
-        height: 24px;
-        background: linear-gradient(to bottom, #111, #333);
-        border-radius: 4px;
-        top: 58%;
-        left: 50%;
-        transform: translateX(-50%);
-        box-shadow:
-            inset 0 2px 3px rgba(255, 255, 255, 0.7),
-            inset 0 -2px 4px rgba(0, 0, 0, 0.9);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .odo-text {
-        font-family: "Courier New", monospace;
-        font-size: 16px;
-        letter-spacing: 2px;
-        color: #f8f8f8;
-    }
-
-    /* SECOND SMALL ROUND DIAL (fuel / engine) */
-    .side-dial-wrapper {
-        width: 90px;
-        height: 90px;
-        border-radius: 50%;
-        background: radial-gradient(circle at 30% 20%, #dfcba7, #9e815d);
-        box-shadow:
-            inset 0 5px 8px rgba(255, 255, 255, 0.6),
-            inset 0 -6px 10px rgba(0, 0, 0, 0.8),
-            0 7px 16px rgba(0, 0, 0, 0.9);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-    }
-
-    .side-dial {
-        width: 72px;
-        height: 72px;
-        border-radius: 50%;
-        background: radial-gradient(circle, #161616 0, #050505 70%);
-        border: 3px solid rgba(255, 255, 255, 0.6);
-        position: relative;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #eee;
-        font-size: 11px;
-        text-transform: uppercase;
-    }
-
-    .side-dial-labels {
-        position: absolute;
-        top: 8px;
-        left: 8px;
-        right: 8px;
-        display: flex;
-        justify-content: space-between;
-        font-size: 9px;
-        opacity: 0.8;
-    }
-
-    .side-dial-bar {
-        position: absolute;
-        bottom: 10px;
-        left: 10px;
-        right: 10px;
-        height: 7px;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.15);
-        overflow: hidden;
-    }
-
-    .side-dial-fuel-level {
-        height: 100%;
-        width: 60%;
-        background: linear-gradient(to right, #ff3d00, #ffeb3b, #00c853);
-    }
-
-    .side-dial-icon {
-        font-size: 17px;
-        opacity: 0.85;
-    }
-
-    /* Indicator lights (right side cluster) */
-    .indicator-stack {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        align-items: center;
-    }
-
-    .lights-row {
-        display: flex;
-        gap: 10px;
-    }
-
-    .light-round {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background: radial-gradient(circle at 30% 20%, #444, #000);
-        box-shadow:
-            inset 0 3px 6px rgba(255, 255, 255, 0.4),
-            inset 0 -3px 7px rgba(0, 0, 0, 0.9),
-            0 4px 10px rgba(0, 0, 0, 0.7);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 13px;
-        color: #eee;
-        position: relative;
-        text-transform: uppercase;
-        font-weight: 600;
-    }
-
-    .light-round.neutral.on {
-        background: radial-gradient(circle at 30% 20%, #baffd4, #00963f);
-        box-shadow:
-            0 0 12px rgba(110, 255, 165, 0.9),
-            inset 0 3px 6px rgba(255, 255, 255, 0.9);
-        color: #042c14;
-    }
-
-    .light-round.highbeam.on {
-        background: radial-gradient(circle at 30% 20%, #c9d5ff, #2757ff);
-        box-shadow:
-            0 0 12px rgba(110, 150, 255, 0.9),
-            inset 0 3px 6px rgba(255, 255, 255, 0.9);
-        color: #051339;
-    }
-
-    .light-round.engine.on {
-        background: radial-gradient(circle at 30% 20%, #ffddc0, #ff5b2e);
-        box-shadow:
-            0 0 12px rgba(255, 140, 80, 0.9),
-            inset 0 3px 6px rgba(255, 255, 255, 0.9);
-        color: #3b1003;
-    }
-
-    /* Controls */
-    .controls {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        justify-content: center;
-        max-width: 460px;
-    }
-
-    .controls button {
-        border: none;
-        padding: 9px 16px;
-        border-radius: 999px;
-        background: linear-gradient(to bottom, #f8f8f8, #c6c6c6);
-        color: #111;
-        font-weight: 600;
-        font-size: 13px;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        box-shadow:
-            0 3px 8px rgba(0, 0, 0, 0.7),
-            inset 0 1px 2px rgba(255, 255, 255, 0.9);
-        cursor: pointer;
-        transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.2s ease;
-    }
-
-    .controls button:active {
-        transform: translateY(1px) scale(0.98);
-        box-shadow:
-            0 1px 4px rgba(0, 0, 0, 0.8),
-            inset 0 1px 2px rgba(0, 0, 0, 0.8);
-        background: linear-gradient(to bottom, #d5d5d5, #9f9f9f);
-    }
-
-    .slider-group {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex: 1 1 100%;
-        justify-content: center;
-        margin-top: 8px;
-        font-size: 13px;
-    }
-
-    .slider-group input[type="range"] {
-        width: 230px;
-        accent-color: #e53935;
-    }
-
-    @media (max-width: 640px) {
-        .cluster {
-            flex-direction: column;
-        }
-    }
-</style>
+  </style>
 </head>
 <body>
-<div class="dashboard">
-    <div class="cluster">
-        <!-- MAIN SPEEDO HOUSING -->
-        <div class="speedo-housing" id="speedoHousing">
-            <div class="dial-face" id="dialFace">
-                <div class="needle" id="needle"></div>
-                <div class="needle-center-outer">
-                    <div class="needle-center-inner"></div>
-                </div>
-                <div class="odo-window">
-                    <span class="odo-text" id="odoText">001537</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- RIGHT SIDE: SMALL DIAL + LIGHTS -->
-        <div class="indicator-stack">
-            <div class="side-dial-wrapper">
-                <div class="side-dial">
-                    <div class="side-dial-labels">
-                        <span>E</span>
-                        <span>F</span>
-                    </div>
-                    <div class="side-dial-bar">
-                        <div class="side-dial-fuel-level" id="fuelLevel"></div>
-                    </div>
-                    <div class="side-dial-icon">⛽</div>
-                </div>
-            </div>
-
-            <div class="lights-row">
-                <div class="light-round neutral on" id="neutralLight" title="Neutral">
-                    N
-                </div>
-                <div class="light-round highbeam" id="highBeamLight" title="High Beam">
-                    ⇧
-                </div>
-                <div class="light-round engine" id="engineLight" title="Engine">
-                    !
-                </div>
-            </div>
-        </div>
+  <div class="carousel" id="carousel">
+    <div class="track" id="track">
+      <!-- PROTOTYPE APP ITEMS (we'll replace with your real icons later) -->
+      <div class="app-item">
+        <div class="app-icon">A1</div>
+        <div class="app-label">App One</div>
+      </div>
+      <div class="app-item">
+        <div class="app-icon">A2</div>
+        <div class="app-label">App Two</div>
+      </div>
+      <div class="app-item">
+        <div class="app-icon">A3</div>
+        <div class="app-label">App Three</div>
+      </div>
+      <div class="app-item">
+        <div class="app-icon">A4</div>
+        <div class="app-label">App Four</div>
+      </div>
+      <div class="app-item">
+        <div class="app-icon">A5</div>
+        <div class="app-label">App Five</div>
+      </div>
+      <div class="app-item">
+        <div class="app-icon">A6</div>
+        <div class="app-label">App Six</div>
+      </div>
+      <div class="app-item">
+        <div class="app-icon">A7</div>
+        <div class="app-label">App Seven</div>
+      </div>
     </div>
+  </div>
 
-    <div class="controls">
-        <button id="btnLights">Backlight</button>
-        <button id="btnRace">Race</button>
-        <button id="btnNeutral">Neutral</button>
-        <button id="btnHighBeam">High Beam</button>
-        <button id="btnEngine">Engine</button>
+  <script>
+    const track = document.getElementById("track");
+    const carousel = document.getElementById("carousel");
 
-        <div class="slider-group">
-            <span>Speed</span>
-            <input type="range" id="speedSlider" min="0" max="160" value="0" />
-            <span id="speedValue">0 km/h</span>
-        </div>
-    </div>
-</div>
+    // Duplicate items so we get an infinite loop feel
+    track.innerHTML = track.innerHTML + track.innerHTML;
 
-<script>
-    // CONFIG TO MATCH REAL CLASSIC 350 DIAL
-    const MIN_SPEED = 0;
-    const MAX_SPEED = 160;
-    // In the real speedo, 0 is around -130°, 160 is around +130° approximately.
-    const START_ANGLE = -130;
-    const END_ANGLE = 130;
+    const items = Array.from(track.querySelectorAll(".app-item"));
+    let x = 0;
+    const speed = 5; // higher = faster swipe
 
-    const needle = document.getElementById("needle");
-    const odoText = document.getElementById("odoText");
-    const speedSlider = document.getElementById("speedSlider");
-    const speedValue = document.getElementById("speedValue");
-    const fuelLevel = document.getElementById("fuelLevel");
+    let baseWidth; // half track width (since we duplicated)
 
-    const speedoHousing = document.getElementById("speedoHousing");
-    const neutralLight = document.getElementById("neutralLight");
-    const highBeamLight = document.getElementById("highBeamLight");
-    const engineLight = document.getElementById("engineLight");
-
-    let currentSpeed = 0;
-    let targetSpeed = 0;
-    let animFrame = null;
-
-    function lerp(a, b, t) {
-        return a + (b - a) * t;
+    function updateBaseWidth() {
+      baseWidth = track.scrollWidth / 2;
     }
 
-    function speedToAngle(speed) {
-        const t = (speed - MIN_SPEED) / (MAX_SPEED - MIN_SPEED);
-        return START_ANGLE + t * (END_ANGLE - START_ANGLE);
+    updateBaseWidth();
+    window.addEventListener("resize", updateBaseWidth);
+
+    function updateScales() {
+      const carouselRect = carousel.getBoundingClientRect();
+      const centerX = carouselRect.left + carouselRect.width / 2;
+      const maxDistance = carouselRect.width / 3; // how far until no zoom
+
+      items.forEach((item) => {
+        const icon = item.querySelector(".app-icon");
+        const label = item.querySelector(".app-label");
+        const rect = item.getBoundingClientRect();
+        const itemCenter = rect.left + rect.width / 2;
+        const distance = Math.abs(centerX - itemCenter);
+
+        // Normalize 0 (center) -> 1 (far)
+        const t = Math.min(1, distance / maxDistance);
+
+        // Scale between 1 and 1.4
+        const scale = 1.4 - 0.4 * t;
+        const brightness = 1.1 - 0.3 * t;
+        const opacity = 1 - 0.4 * t;
+
+        icon.style.transform = `scale(${scale})`;
+        icon.style.filter = `brightness(${brightness})`;
+        icon.style.opacity = opacity;
+        label.style.opacity = opacity;
+      });
     }
 
-    function updateNeedle(speed) {
-        const angle = speedToAngle(speed);
-        needle.style.transform =
-            `translate(-50%, -76%) rotate(${angle}deg)`;
-
-        speedValue.textContent = `${speed.toFixed(0)} km/h`;
-
-        // Fake odometer movement & fuel jiggle
-        const baseOdo = 1537;
-        const extra = Math.floor(Date.now() / 1000) % 999;
-        const odoVal = baseOdo + extra + Math.floor(speed);
-        odoText.textContent = odoVal.toString().padStart(6, "0");
-
-        const fuelWobble = 10 * Math.sin(Date.now() / 2000);
-        fuelLevel.style.width = `${60 + fuelWobble}%`;
+    function loop() {
+      x -= speed;
+      if (x <= -baseWidth) {
+        x += baseWidth;
+      }
+      track.style.transform = `translate3d(${x}px, -50%, 0)`;
+      updateScales();
+      requestAnimationFrame(loop);
     }
 
-    function animate() {
-        if (Math.abs(targetSpeed - currentSpeed) < 0.3) {
-            currentSpeed = targetSpeed;
-            updateNeedle(currentSpeed);
-            animFrame = null;
-            return;
-        }
-        currentSpeed = lerp(currentSpeed, targetSpeed, 0.15);
-        updateNeedle(currentSpeed);
-        animFrame = requestAnimationFrame(animate);
-    }
-
-    function setSpeed(value) {
-        targetSpeed = Math.max(MIN_SPEED, Math.min(MAX_SPEED, value));
-        if (!animFrame) {
-            animFrame = requestAnimationFrame(animate);
-        }
-    }
-
-    // Slider = manual speed control
-    speedSlider.addEventListener("input", (e) => {
-        setSpeed(parseInt(e.target.value, 10));
-    });
-
-    // Buttons
-    document.getElementById("btnLights").addEventListener("click", () => {
-        speedoHousing.classList.toggle("lights-on");
-    });
-
-    document.getElementById("btnNeutral").addEventListener("click", () => {
-        neutralLight.classList.toggle("on");
-    });
-
-    document.getElementById("btnHighBeam").addEventListener("click", () => {
-        highBeamLight.classList.toggle("on");
-    });
-
-    document.getElementById("btnEngine").addEventListener("click", () => {
-        engineLight.classList.toggle("on");
-    });
-
-    // Race animation: quick rev & drop
-    let racing = false;
-    document.getElementById("btnRace").addEventListener("click", () => {
-        if (racing) return;
-        racing = true;
-
-        const currentSlider = parseInt(speedSlider.value, 10);
-        const peak = 90 + Math.random() * 60; // 90–150
-
-        setSpeed(peak);
-        setTimeout(() => setSpeed(40 + Math.random() * 20), 900);
-        setTimeout(() => {
-            setSpeed(currentSlider);
-            racing = false;
-        }, 1800);
-    });
-
-    // Initial render
-    setSpeed(0);
-</script>
+    requestAnimationFrame(loop);
+  </script>
 </body>
 </html>
