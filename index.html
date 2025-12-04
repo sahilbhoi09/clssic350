@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Fast App Swipe Prototype</title>
+  <title>Fast App Swipe</title>
   <style>
     * {
       box-sizing: border-box;
@@ -12,7 +12,6 @@
 
     body {
       background: #000;
-      color: #fff;
       height: 100vh;
       display: flex;
       align-items: center;
@@ -41,69 +40,82 @@
     }
 
     .app-item {
-      width: 110px;
-      text-align: center;
-      font-size: 13px;
-      color: #ddd;
+      width: 120px;
       pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .app-icon {
       width: 110px;
       height: 110px;
       border-radius: 26px;
-      background: radial-gradient(circle at 20% 20%, #ffffff55, #5555ff 40%, #111);
+      background: #000;
+      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
       transform-origin: center center;
       transform: scale(1);
       filter: brightness(0.8);
+      opacity: 0.7;
       transition: transform 0.08s linear, filter 0.08s linear, opacity 0.08s linear;
       will-change: transform, filter, opacity;
     }
 
-    .app-label {
-      margin-top: 10px;
-      opacity: 0.7;
+    .app-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
   </style>
 </head>
 <body>
   <div class="carousel" id="carousel">
     <div class="track" id="track">
-      <!-- PROTOTYPE APP ITEMS (we'll replace with your real icons later) -->
+      <!-- CapCut -->
       <div class="app-item">
-        <div class="app-icon">A1</div>
-        <div class="app-label">App One</div>
+        <div class="app-icon">
+          <img src="capcut.png" alt="CapCut" />
+        </div>
       </div>
+      <!-- TradingView -->
       <div class="app-item">
-        <div class="app-icon">A2</div>
-        <div class="app-label">App Two</div>
+        <div class="app-icon">
+          <img src="tradingview.png" alt="TradingView" />
+        </div>
       </div>
+      <!-- DaVinci Resolve -->
       <div class="app-item">
-        <div class="app-icon">A3</div>
-        <div class="app-label">App Three</div>
+        <div class="app-icon">
+          <img src="davinci.png" alt="DaVinci Resolve" />
+        </div>
       </div>
+      <!-- Blender -->
       <div class="app-item">
-        <div class="app-icon">A4</div>
-        <div class="app-label">App Four</div>
+        <div class="app-icon">
+          <img src="blender.png" alt="Blender" />
+        </div>
       </div>
+      <!-- PUBG -->
       <div class="app-item">
-        <div class="app-icon">A5</div>
-        <div class="app-label">App Five</div>
+        <div class="app-icon">
+          <img src="pubg.png" alt="PUBG" />
+        </div>
       </div>
+      <!-- VS Code -->
       <div class="app-item">
-        <div class="app-icon">A6</div>
-        <div class="app-label">App Six</div>
+        <div class="app-icon">
+          <img src="vscode.png" alt="VS Code" />
+        </div>
       </div>
+      <!-- ChatGPT -->
       <div class="app-item">
-        <div class="app-icon">A7</div>
-        <div class="app-label">App Seven</div>
+        <div class="app-icon">
+          <img src="chatgpt.png" alt="ChatGPT" />
+        </div>
       </div>
     </div>
   </div>
@@ -112,17 +124,22 @@
     const track = document.getElementById("track");
     const carousel = document.getElementById("carousel");
 
-    // Duplicate items so we get an infinite loop feel
+    // Duplicate items for infinite loop effect
     track.innerHTML = track.innerHTML + track.innerHTML;
 
     const items = Array.from(track.querySelectorAll(".app-item"));
-    let x = 0;
-    const speed = 5; // higher = faster swipe
 
-    let baseWidth; // half track width (since we duplicated)
+    let x = 0;
+    const speed = 10; // higher = faster swipe
+
+    let baseWidth;
 
     function updateBaseWidth() {
       baseWidth = track.scrollWidth / 2;
+      // start slightly to the left so icons flow left -> right
+      if (x === 0) {
+        x = -baseWidth;
+      }
     }
 
     updateBaseWidth();
@@ -131,35 +148,33 @@
     function updateScales() {
       const carouselRect = carousel.getBoundingClientRect();
       const centerX = carouselRect.left + carouselRect.width / 2;
-      const maxDistance = carouselRect.width / 3; // how far until no zoom
+      const maxDistance = carouselRect.width / 3;
 
       items.forEach((item) => {
         const icon = item.querySelector(".app-icon");
-        const label = item.querySelector(".app-label");
         const rect = item.getBoundingClientRect();
         const itemCenter = rect.left + rect.width / 2;
         const distance = Math.abs(centerX - itemCenter);
 
-        // Normalize 0 (center) -> 1 (far)
         const t = Math.min(1, distance / maxDistance);
 
-        // Scale between 1 and 1.4
-        const scale = 1.4 - 0.4 * t;
-        const brightness = 1.1 - 0.3 * t;
-        const opacity = 1 - 0.4 * t;
+        const scale = 1.4 - 0.4 * t;      // 1.4 in center, 1 at edges
+        const brightness = 1.1 - 0.3 * t; // brighter in center
+        const opacity = 1 - 0.4 * t;      // more visible in center
 
         icon.style.transform = `scale(${scale})`;
         icon.style.filter = `brightness(${brightness})`;
         icon.style.opacity = opacity;
-        label.style.opacity = opacity;
       });
     }
 
     function loop() {
-      x -= speed;
-      if (x <= -baseWidth) {
-        x += baseWidth;
+      x += speed; // move left -> right
+
+      if (x >= 0) {
+        x -= baseWidth;
       }
+
       track.style.transform = `translate3d(${x}px, -50%, 0)`;
       updateScales();
       requestAnimationFrame(loop);
